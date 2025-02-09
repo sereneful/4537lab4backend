@@ -1,3 +1,8 @@
+/**
+ * AI DISCLAIMER:
+ * This code includes function-level comments generated with the assistance of ChatGPT.
+ * ChatGPT was used to identify and explain bugs in code durring debugging process.
+ */
 const http = require('http');
 const url = require('url');
 const messages = require('./lang/en/en.js');
@@ -12,6 +17,18 @@ class ServerHandler {
     this.server = server;
   }
 
+  /**
+ * Handles the storage of a new word definition.
+ * 
+ * - Reads the incoming JSON request body.
+ * - Validates the presence of required fields ('word' and 'definition').
+ * - Ensures the word contains only alphabetic characters.
+ * - Checks if the word already exists; if not, stores it.
+ * - Sends appropriate success or error responses.
+ * 
+ * @param {http.IncomingMessage} req - The HTTP request object.
+ * @param {http.ServerResponse} res - The HTTP response object.
+ */
   handlePostWord(req, res) {
     let body = '';
 
@@ -81,7 +98,19 @@ class ServerHandler {
       }
     });
   }
+  
 
+/**
+ * Retrieves the definition of a given word.
+ * 
+ * - Parses query parameters from the request URL.
+ * - Validates the presence of the 'word' parameter.
+ * - Checks if the word exists in storage.
+ * - Returns the word's definition or an error message if not found.
+ * 
+ * @param {http.IncomingMessage} req - The HTTP request object.
+ * @param {http.ServerResponse} res - The HTTP response object.
+ */
   handleGetWord(req, res) {
     const parsedUrl = url.parse(req.url, true);
     const query = parsedUrl.query;
@@ -116,10 +145,15 @@ class ServerHandler {
 }
 
 class Server {
-  /**
-   * Initializes the server with the given port.
-   * @param {number} port - The port number for the server.
-   */
+/**
+ * Initializes and configures the server.
+ * 
+ * - Creates an HTTP server.
+ * - Initializes request routing logic.
+ * - Keeps track of request count.
+ * 
+ * @param {number} port - The port number for the server.
+ */
   constructor(port) {
     this.port = port;
     this.server = http.createServer(this.requestHandler.bind(this));
@@ -127,11 +161,21 @@ class Server {
     this.requestCount = 0;
   }
 
-  /**
-   * Routes incoming HTTP requests.
-   * @param {http.IncomingMessage} req - Request object.
-   * @param {http.ServerResponse} res - Response object.
-   */
+/**
+ * Handles incoming HTTP requests and routes them to appropriate handlers.
+ * 
+ * - Parses the request URL and method.
+ * - Sets CORS headers to allow cross-origin requests.
+ * - Routes:
+ *   - `/api/definitions` (GET): Fetch a word's definition.
+ *   - `/api/definitions` (POST): Store a new word definition.
+ *   - `/` (root): Returns a welcome message.
+ *   - Unknown routes return a 404 response.
+ * - Handles errors gracefully and ensures proper HTTP responses.
+ * 
+ * @param {http.IncomingMessage} req - The HTTP request object.
+ * @param {http.ServerResponse} res - The HTTP response object.
+ */
   requestHandler(req, res) {
     this.requestCount++;
     const parsedUrl = url.parse(req.url, true);
